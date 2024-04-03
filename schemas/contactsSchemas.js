@@ -8,6 +8,6 @@ export const createContactSchema = Joi.object({
 
 export const updateContactSchema = Joi.object({
   name: Joi.string(),
-  email: Joi.string(),
+  email: Joi.string().email(),
   phone: Joi.string(),
 });
