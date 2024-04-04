@@ -45,7 +45,6 @@ export async function updateContactById(contactId, updatedInfo) {
   if (index === -1) {
     return null;
   }
-  // contacts[index] = { id: contactId, name, email, phone };
   contacts[index] = {
     ...contacts[index],
     ...updatedInfo,
