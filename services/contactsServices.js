@@ -39,13 +39,17 @@ export async function addContact(name, email, phone) {
   return newContact;
 }
 
-export async function updateContactById(contactId, name, email, phone) {
+export async function updateContactById(contactId, updatedInfo) {
   const contacts = await listContacts();
   const index = contacts.findIndex((item) => item.id === contactId);
   if (index === -1) {
     return null;
   }
-  contacts[index] = { id: contactId, name, email, phone };
+  // contacts[index] = { id: contactId, name, email, phone };
+  contacts[index] = {
+    ...contacts[index],
+    ...updatedInfo,
+  };
   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return contacts[index];
 }
