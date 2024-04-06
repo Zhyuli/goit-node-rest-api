@@ -1,10 +1,10 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-
 import contactsRouter from "./routes/contactsRouter.js";
-const DB_HOST =
-  "mongodb+srv://YuliaZh:cjMpPRhYR7HUVbsR@cluster0.mcbdydp.mongodb.net/bd-contacts?retryWrites=true&w=majority&appName=Cluster0";
+import mongoose from "mongoose";
+import { DB_HOST } from "./config.js";
+
 mongoose
   .connect(DB_HOST)
   .then(() => {
@@ -15,8 +15,6 @@ mongoose
     console.log(error.message);
     process.exit(1);
   });
-
-import mongoose from "mongoose";
 
 const app = express();
 
