@@ -1,5 +1,7 @@
 import express from "express";
+
 import validateBody from "../helpers/validateBody.js";
+
 import {
   createContactSchema,
   updateContactSchema,
@@ -14,24 +16,24 @@ const contactsRouter = express.Router();
 
 contactsRouter.get("/", ctrl.getAllContacts);
 
-contactsRouter.get("/:id", isValidId, ctrl.getOneContact);
+contactsRouter.get("/:id", ctrl.getOneContact); // isValidId,
 
-contactsRouter.delete("/:id", isValidId, ctrl.deleteContact);
+contactsRouter.delete("/:id", ctrl.deleteContact); //isValidId,
 
 contactsRouter.post("/", validateBody(createContactSchema), ctrl.createContact);
 
 contactsRouter.put(
   "/:id",
-  isValidId,
+
   validateBody(updateContactSchema),
   ctrl.updateContact
-);
+); //isValidId,
 
 contactsRouter.patch(
   "/:id/favorite",
-  isValidId,
+
   validateBody(updateFavoriteSchema),
   ctrl.updateFavorite
-);
+); //  isValidId,
 
 export default contactsRouter;
