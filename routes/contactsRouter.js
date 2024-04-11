@@ -24,17 +24,15 @@ contactsRouter.post("/", validateBody(createContactSchema), ctrl.createContact);
 
 contactsRouter.put(
   "/:id",
-
-  validateBody(updateContactSchema),
   isValidId,
+  validateBody(updateContactSchema),
   ctrl.updateContact
 );
 
 contactsRouter.patch(
   "/:id/favorite",
-
-  validateBody(updateFavouriteSchema),
   isValidId,
+  validateBody(updateFavouriteSchema),
   ctrl.updateFavourite
 );
 
