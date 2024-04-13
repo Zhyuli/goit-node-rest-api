@@ -1,94 +1,76 @@
-import {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContactById,
-} from "../services/contactsServices.js";
-
 import HttpError from "../helpers/HttpError.js";
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
 
-export const getAllContacts = async (req, res, next) => {
-  try {
-    const allContacts = await listContacts();
-    res.json(allContacts);
-  } catch (err) {
-    next(err);
-  }
+import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
+
+import { Contact } from "../models/contact.js";
+
+const getAllContacts = async (req, res) => {
+  const allContacts = await Contact.find();
+  res.json(allContacts);
 };
 
-export const getOneContact = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const result = await getContactById(id);
-    if (!result) {
-      throw HttpError(404, "Not found");
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+const getOneContact = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findById(id);
+  if (!result) {
+    throw HttpError(404, "Not found");
   }
+  res.json(result);
 };
 
-export const deleteContact = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const result = await removeContact(id);
-    if (!result) {
-      throw HttpError(404, "Not found");
-    }
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
+const deleteContact = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findByIdAndDelete(id);
+  if (!result) {
+    throw HttpError(404, "Not found");
   }
+  res.status(200).json(result);
 };
 
-export const createContact = async (req, res, next) => {
-  try {
-    const { error } = createContactSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { name, email, phone } = req.body;
-    const result = await addContact(name, email, phone);
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
+const createContact = async (req, res) => {
+  const { name, email, phone } = req.body;
+  const result = await Contact.create({ name, email, phone });
+  res.status(201).json(result);
 };
 
-export const updateContact = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    if (Object.keys(req.body).length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Body must have at least one field" });
-    }
-    const { error } = updateContactSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const existingContact = await getContactById(id);
-    if (!existingContact) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    const updatedContact = {
-      ...existingContact,
-      ...req.body,
-    };
-
-    const result = await updateContactById(id, updatedContact);
-    if (!result) {
-      throw HttpError(404, "Not found");
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+const updateContact = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone, favorite } = req.body;
+  if (Object.keys(req.body).length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Body must have at least one field" });
   }
+  const update = await Contact.findByIdAndUpdate(
+    id,
+    { name, email, phone, favorite },
+    { new: true }
+  );
+  if (!update) {
+    throw HttpError(404, "Not found");
+  }
+  res.json(update);
+};
+
+const updateFavourite = async (req, res) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+  const updateFavourite = await Contact.findByIdAndUpdate(
+    id,
+    { favorite },
+    { new: true }
+  );
+  if (!updateFavourite) {
+    throw HttpError(404, "Not found");
+  }
+  res.json(updateFavourite);
+};
+
+export const controllers = {
+  getAllContacts: ctrlWrapper(getAllContacts),
+  getOneContact: ctrlWrapper(getOneContact),
+  createContact: ctrlWrapper(createContact),
+  updateContact: ctrlWrapper(updateContact),
+  deleteContact: ctrlWrapper(deleteContact),
+  updateFavourite: ctrlWrapper(updateFavourite),
 };
