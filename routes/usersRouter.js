@@ -10,4 +10,6 @@ const usersRouter = express.Router();
 
 usersRouter.post("/register", validateBody(registerSchema), ctrl.registerUser);
 
+usersRouter.post("/login", validateBody(loginSchema), ctrl.loginUser);
+
 export default usersRouter;
