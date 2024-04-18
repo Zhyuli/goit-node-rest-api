@@ -61,8 +61,15 @@ const getCurrentUser = async (req, res) => {
   });
 };
 
+const logoutUser = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+  res.status(204).json();
+};
+
 export const controllers = {
   registerUser: ctrlWrapper(registerUser),
   loginUser: ctrlWrapper(loginUser),
   getCurrentUser: ctrlWrapper(getCurrentUser),
+  logoutUser: ctrlWrapper(logoutUser),
 };
