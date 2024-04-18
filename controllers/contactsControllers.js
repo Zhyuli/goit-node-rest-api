@@ -6,7 +6,12 @@ import { Contact } from "../models/contact.js";
 
 const getAllContacts = async (req, res) => {
   const { _id: owner } = req.user;
-  const allContacts = await Contact.find({ owner }, "-createdAt -updatedAt");
+  const { page = 1, limit = 20 } = req.query;
+  const skip = (page - 1) * limit;
+  const allContacts = await Contact.find({ owner }, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  }).populate("owner", "name email");
   res.json(allContacts);
 };
 
