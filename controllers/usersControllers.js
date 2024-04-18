@@ -9,7 +9,7 @@ dotenv.config();
 const { SECRET_KEY } = process.env;
 
 const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, subscription } = req.body;
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, "Email in use");
@@ -21,7 +21,7 @@ const registerUser = async (req, res) => {
   res.status(201).json({
     user: {
       email: newUser.email,
-      password: newUser.password,
+      subscription: newUser.subscription,
     },
   });
 };

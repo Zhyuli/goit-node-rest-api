@@ -5,7 +5,8 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import { Contact } from "../models/contact.js";
 
 const getAllContacts = async (req, res) => {
-  const allContacts = await Contact.find();
+  const { _id: owner } = req.user;
+  const allContacts = await Contact.find({ owner }, "-createdAt -updatedAt");
   res.json(allContacts);
 };
 
@@ -29,7 +30,8 @@ const deleteContact = async (req, res) => {
 
 const createContact = async (req, res) => {
   const { name, email, phone } = req.body;
-  const result = await Contact.create({ name, email, phone });
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ name, email, phone, owner });
   res.status(201).json(result);
 };
 
