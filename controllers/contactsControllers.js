@@ -17,7 +17,9 @@ const getAllContacts = async (req, res) => {
 
 const getOneContact = async (req, res) => {
   const { id } = req.params;
-  const result = await Contact.findById(id);
+  const { _id: owner } = req.user; //
+  // const result = await Contact.findById(id, owner); //
+  const result = await Contact.findOne({ _id: id, owner });
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -26,7 +28,8 @@ const getOneContact = async (req, res) => {
 
 const deleteContact = async (req, res) => {
   const { id } = req.params;
-  const result = await Contact.findByIdAndDelete(id);
+  const result = await Contact.findOneAndDelete({ _id: id, owner });
+  //const result = await Contact.findByIdAndDelete(id);
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -48,11 +51,17 @@ const updateContact = async (req, res) => {
       .status(400)
       .json({ message: "Body must have at least one field" });
   }
-  const update = await Contact.findByIdAndUpdate(
-    id,
+  const update = await Contact.findOneAndUpdate(
+    { _id: id, owner },
     { name, email, phone, favorite },
     { new: true }
   );
+
+  // const update = await Contact.findByIdAndUpdate(
+  //   id,
+  //   { name, email, phone, favorite },
+  //   { new: true }
+  // );
   if (!update) {
     throw HttpError(404, "Not found");
   }
@@ -62,11 +71,17 @@ const updateContact = async (req, res) => {
 const updateFavourite = async (req, res) => {
   const { id } = req.params;
   const { favorite } = req.body;
-  const updateFavourite = await Contact.findByIdAndUpdate(
-    id,
+  const updateFavourite = await Contact.findOneAndUpdate(
+    { _id: id, owner },
     { favorite },
     { new: true }
   );
+
+  // const updateFavourite = await Contact.findByIdAndUpdate(
+  //   id,
+  //   { favorite },
+  //   { new: true }
+  // );
   if (!updateFavourite) {
     throw HttpError(404, "Not found");
   }
