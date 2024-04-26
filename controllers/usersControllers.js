@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import gravatar from "gravatar";
 import fs from "fs/promises";
+import Jimp from "jimp";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -79,11 +80,21 @@ const logoutUser = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
-  const { path: tempUpload, originalname } = req.file;
+  const { path: tempUpload, originalname, size } = req.file;
+
+  if (size > 2 * 1024 * 1024) {
+    throw HttpError(400, "File is too large!");
+  }
+  const avatar = await Jimp.read(tempUpload);
+  await avatar.resize(250, 250).quality(50);
+
   const filename = `${_id}_${originalname}`;
   const resultUpload = path.join(avatarsDir, filename);
+
   await fs.rename(tempUpload, resultUpload);
+
   const avatarURL = path.join("avatars", filename);
+
   await User.findByIdAndUpdate(_id, { avatarURL });
 
   res.status(200).json({
