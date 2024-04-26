@@ -3,11 +3,15 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import path from "path";
 import gravatar from "gravatar";
+import fs from "fs/promises";
 import dotenv from "dotenv";
 dotenv.config();
 
 const { SECRET_KEY } = process.env;
+
+const avatarsDir = path.join("public", "avatars");
 
 const registerUser = async (req, res) => {
   const { email, password, subscription } = req.body;
@@ -73,9 +77,23 @@ const logoutUser = async (req, res) => {
   res.status(204).json();
 };
 
+const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+  const resultUpload = path.join(avatarsDir, originalname);
+  await fs.rename(tempUpload, resultUpload);
+  const avatarURL = path.join("avatars", originalname);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+
+  res.status(200).json({
+    avatarURL,
+  });
+};
+
 export const controllers = {
   registerUser: ctrlWrapper(registerUser),
   loginUser: ctrlWrapper(loginUser),
   getCurrentUser: ctrlWrapper(getCurrentUser),
   logoutUser: ctrlWrapper(logoutUser),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };
