@@ -3,6 +3,7 @@ import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -15,8 +16,13 @@ const registerUser = async (req, res) => {
     throw HttpError(409, "Email in use");
   }
   const hashPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
 
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
 
   res.status(201).json({
     user: {

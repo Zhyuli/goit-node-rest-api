@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { handleMongooseError } from "../helpers/handleMongooseError.js";
+// import { required } from "joi";
 
 const userSchema = new Schema(
   {
@@ -20,6 +21,10 @@ const userSchema = new Schema(
     token: {
       type: String,
       default: "",
+    },
+    avatarURL: {
+      type: String,
+      required: [true, "Avatar is required"],
     },
   },
   { versionKey: false, timestamps: true }
