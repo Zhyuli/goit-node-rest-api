@@ -79,14 +79,24 @@ const logoutUser = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, "No file provided");
+  }
+
   const { _id } = req.user;
   const { path: tempUpload, originalname, size } = req.file;
 
   if (size > 2 * 1024 * 1024) {
     throw HttpError(400, "File is too large!");
   }
-  const avatar = await Jimp.read(tempUpload);
-  await avatar.resize(250, 250).quality(50);
+
+  await Jimp.read(tempUpload)
+    .then((avatar) => {
+      return avatar.resize(250, 250).quality(60).write(tempUpload);
+    })
+    .catch((err) => {
+      throw err;
+    });
 
   const filename = `${_id}_${originalname}`;
   const resultUpload = path.join(avatarsDir, filename);
