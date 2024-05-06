@@ -6,13 +6,21 @@ import authenticate from "../helpers/authenticate.js";
 
 import upload from "../helpers/upload.js";
 
-import { registerSchema, loginSchema } from "../schemas/usersSchemas.js";
+import {
+  registerSchema,
+  loginSchema,
+  userEmailSchema,
+} from "../schemas/usersSchemas.js";
 
 import { controllers as ctrl } from "../controllers/usersControllers.js";
 
 const usersRouter = express.Router();
 
 usersRouter.post("/register", validateBody(registerSchema), ctrl.registerUser);
+
+usersRouter.get("/verify/:verificationToken", ctrl.verify);
+
+usersRouter.post("/verify", validateBody(userEmailSchema), ctrl.resendVerify);
 
 usersRouter.post("/login", validateBody(loginSchema), ctrl.loginUser);
 
